@@ -56,9 +56,9 @@ public class SorterTest
                                           new IntegerDataStoreFileImpl( "finish" ),
                                           1000 * 1000 * 10,
                                           100 );
-        //sorter.fillWithRandomIntegers();
-        //sorter.doChunkSort();
-        //sorter.doMergeSort();
+        sorter.fillWithRandomIntegers();
+        sorter.doChunkSort();
+        sorter.doMergeSort();
         assertTrue( sorter.doVerifyResult() );
     }
 
