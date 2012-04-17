@@ -18,12 +18,6 @@ import java.util.concurrent.Future;
  */
 public final class Main
 {
-    private static void print( long startTime, String message )
-    {
-        final long elapsed = ( System.currentTimeMillis() - startTime ) / 1000;
-        System.out.println( elapsed + " " + message );
-    }
-
     /**
      * @param args
      */
@@ -132,5 +126,11 @@ public final class Main
         {
             e.printStackTrace();
         }
+    }
+
+    private static void print( long startTime, String message )
+    {
+        final long elapsed = ( System.currentTimeMillis() - startTime ) / 1000;
+        System.out.println( elapsed + " " + message );
     }
 }

@@ -17,6 +17,12 @@ import org.junit.Test;
  */
 public class IntegerDataStoreFileImplTest
 {
+    private static final int[] ORDERED = new int[100];
+
+    private static final int[] RANDOM = new int[100];
+
+    private static final int[] SAME = new int[100];
+
     /**
      * @throws java.lang.Exception
      */
@@ -42,7 +48,6 @@ public class IntegerDataStoreFileImplTest
     public static void tearDownAfterClass() throws Exception
     {
     }
-
     /**
      * @throws java.lang.Exception
      */
@@ -50,7 +55,6 @@ public class IntegerDataStoreFileImplTest
     public void setUp() throws Exception
     {
     }
-
     /**
      * @throws java.lang.Exception
      */
@@ -58,10 +62,6 @@ public class IntegerDataStoreFileImplTest
     public void tearDown() throws Exception
     {
     }
-
-    private static final int[] ORDERED = new int[100];
-    private static final int[] RANDOM = new int[100];
-    private static final int[] SAME = new int[100];
 
     /**
      * Test a bunch of puts and gets.

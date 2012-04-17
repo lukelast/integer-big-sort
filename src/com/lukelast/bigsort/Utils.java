@@ -5,10 +5,6 @@ import java.util.Random;
 
 final class Utils
 {
-    private Utils()
-    {
-    }
-
     public static void fillWithRandomIntegers( final IntegerDataStore store, final long start,
                                                final long size ) throws IOException
     {
@@ -19,5 +15,9 @@ final class Utils
             writerCursor.write( rand.nextInt() );
         }
         writerCursor.flush();
+    }
+
+    private Utils()
+    {
     }
 }

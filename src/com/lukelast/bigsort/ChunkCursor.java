@@ -9,22 +9,22 @@ import java.util.Arrays;
  */
 public final class ChunkCursor
 {
-    private final IntegerDataStore mDataStore;
-    private final long mIndexFirst;
-    private final long mIndexLast;
-    /**
-     * The index within the data store that the current chunk starts at.
-     */
-    private long mDataStoreIndex;
-    /**
-     * The size of each {@link #mDataChunk} cached.
-     */
-    private final int mChunkSize;
     /**
      * The current index within the current chunk of data {@link #mDataChunk}.
      */
     private int mChunkIndex;
+    /**
+     * The size of each {@link #mDataChunk} cached.
+     */
+    private final int mChunkSize;
     private int[] mDataChunk;
+    private final IntegerDataStore mDataStore;
+    /**
+     * The index within the data store that the current chunk starts at.
+     */
+    private long mDataStoreIndex;
+    private final long mIndexFirst;
+    private final long mIndexLast;
 
     ChunkCursor( IntegerDataStore dataStore, long indexFirst, long length, int chunkSize )
     {
@@ -36,14 +36,24 @@ public final class ChunkCursor
         this.mChunkIndex = Integer.MAX_VALUE;
     }
 
-    public boolean hasNext()
-    {
-        return mChunkIndex < mDataChunk.length || mDataStoreIndex <= mIndexLast;
-    }
-
     private int findNextChunkSize()
     {
         return (int) Math.min( mChunkSize, ( mIndexLast - mDataStoreIndex ) + 1L );
+    }
+
+    public void flush() throws IOException
+    {
+        if ( mDataChunk != null && 0 < mChunkIndex )
+        {
+            int[] data;
+            if ( mDataChunk.length <= mChunkIndex )
+                data = mDataChunk;
+            else
+                data = Arrays.copyOf( mDataChunk, mChunkIndex );
+            mDataStore.put( data, mDataStoreIndex );
+            mDataStoreIndex += data.length;
+        }
+        mChunkIndex = 0;
     }
 
     /**
@@ -55,6 +65,11 @@ public final class ChunkCursor
     {
         this.maybeLoadNextChunk();
         return mDataChunk[mChunkIndex++];
+    }
+
+    public boolean hasNext()
+    {
+        return mChunkIndex < mDataChunk.length || mDataStoreIndex <= mIndexLast;
     }
 
     private void maybeLoadNextChunk() throws IOException
@@ -77,21 +92,6 @@ public final class ChunkCursor
     {
         this.maybeLoadNextChunk();
         return mDataChunk[mChunkIndex];
-    }
-
-    public void flush() throws IOException
-    {
-        if ( mDataChunk != null && 0 < mChunkIndex )
-        {
-            int[] data;
-            if ( mDataChunk.length <= mChunkIndex )
-                data = mDataChunk;
-            else
-                data = Arrays.copyOf( mDataChunk, mChunkIndex );
-            mDataStore.put( data, mDataStoreIndex );
-            mDataStoreIndex += data.length;
-        }
-        mChunkIndex = 0;
     }
 
     public void write( int value ) throws IOException

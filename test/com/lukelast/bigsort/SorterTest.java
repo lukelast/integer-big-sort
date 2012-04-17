@@ -33,6 +33,48 @@ public class SorterTest
     }
 
     @Test
+    public void test10Billion() throws Exception
+    {
+        final Sorter sorter = new Sorter( new IntegerDataStoreFileImpl( "start" ),
+                                          new IntegerDataStoreFileImpl( "finish" ),
+                                          1000 * 1000 * 10,
+                                          1000 );
+        sorter.fillWithRandomIntegers();
+        sorter.doChunkSort();
+        sorter.doMergeSort();
+        assertTrue( sorter.doVerifyResult() );
+    }
+
+    /**
+     * 727 seconds.
+     * @throws Exception
+     */
+    @Test
+    public void test1Billion() throws Exception
+    {
+        final Sorter sorter = new Sorter( new IntegerDataStoreFileImpl( "start" ),
+                                          new IntegerDataStoreFileImpl( "finish" ),
+                                          1000 * 1000 * 10,
+                                          100 );
+        //sorter.fillWithRandomIntegers();
+        //sorter.doChunkSort();
+        //sorter.doMergeSort();
+        assertTrue( sorter.doVerifyResult() );
+    }
+
+    @Test
+    public void testDoMergeSort()
+    {
+        fail( "Not yet implemented" );
+    }
+
+    @Test
+    public void testDoVerifyResult()
+    {
+        fail( "Not yet implemented" );
+    }
+
+    @Test
     public void testSort1mInMemory() throws Exception
     {
         final int chunkSize = 1000 * 10;
@@ -67,31 +109,6 @@ public class SorterTest
                             sorter.doVerifyResult() );
             }
         }
-    }
-
-    @Test
-    public void test10Billion() throws Exception
-    {
-        final Sorter sorter = new Sorter( new IntegerDataStoreFileImpl( "start" ),
-                                          new IntegerDataStoreFileImpl( "finish" ),
-                                          1000 * 1000 * 10,
-                                          1000 );
-        sorter.fillWithRandomIntegers();
-        sorter.doChunkSort();
-        sorter.doMergeSort();
-        assertTrue( sorter.doVerifyResult() );
-    }
-
-    @Test
-    public void testDoMergeSort()
-    {
-        fail( "Not yet implemented" );
-    }
-
-    @Test
-    public void testDoVerifyResult()
-    {
-        fail( "Not yet implemented" );
     }
 
 }

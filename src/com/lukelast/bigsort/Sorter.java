@@ -6,10 +6,10 @@ import java.util.PriorityQueue;
 
 public class Sorter
 {
-    protected final IntegerDataStore mStartStore;
-    protected final IntegerDataStore mFinishStore;
-    protected final long mChunkSize;
     protected final int mChunkCount;
+    protected final long mChunkSize;
+    protected final IntegerDataStore mFinishStore;
+    protected final IntegerDataStore mStartStore;
     protected final long mTotalIntegerCount;
 
     public Sorter( IntegerDataStore integerStore, IntegerDataStore finishStore, long chunkSize,
@@ -22,9 +22,12 @@ public class Sorter
         this.mTotalIntegerCount = chunkSize * totalChunks;
     }
 
-    public void fillWithRandomIntegers() throws IOException
+    protected int calculateMergeChunkSize()
     {
-        Utils.fillWithRandomIntegers( mStartStore, 0, mTotalIntegerCount );
+        if ( mChunkSize <= mChunkCount )
+            return (int) mChunkSize;
+        else
+            return (int) ( mChunkSize / mChunkCount );
     }
 
     public void doChunkSort() throws IOException
@@ -35,14 +38,6 @@ public class Sorter
             Arrays.sort( dataChunk );
             mStartStore.put( dataChunk, chunkCount * mChunkSize );
         }
-    }
-
-    protected int calculateMergeChunkSize()
-    {
-        if ( mChunkSize <= mChunkCount )
-            return (int) mChunkSize;
-        else
-            return (int) ( mChunkSize / mChunkCount );
     }
 
     public void doMergeSort() throws IOException
@@ -88,6 +83,11 @@ public class Sorter
             lastValue = value;
         }
         return true;
+    }
+
+    public void fillWithRandomIntegers() throws IOException
+    {
+        Utils.fillWithRandomIntegers( mStartStore, 0, mTotalIntegerCount );
     }
 
 }

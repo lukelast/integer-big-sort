@@ -10,15 +10,10 @@ import java.nio.channels.FileChannel.MapMode;
 
 public class IntegerDataStoreFileImpl implements IntegerDataStore
 {
-    private static final String DEFAULT_DIRECTORY = "L:\\test";
-    private final RandomAccessFile mRandomAccessFile;
-    private final FileChannel mFileChannel;
+    private static final String DEFAULT_DIRECTORY = "C:\\test";
     private final File mFile;
-
-    public IntegerDataStoreFileImpl( String fileName ) throws FileNotFoundException
-    {
-        this( new File( DEFAULT_DIRECTORY, fileName + ".dat" ) );
-    }
+    private final FileChannel mFileChannel;
+    private final RandomAccessFile mRandomAccessFile;
 
     public IntegerDataStoreFileImpl( File file ) throws FileNotFoundException
     {
@@ -28,16 +23,23 @@ public class IntegerDataStoreFileImpl implements IntegerDataStore
         this.mFileChannel = mRandomAccessFile.getChannel();
     }
 
+    public IntegerDataStoreFileImpl( String fileName ) throws FileNotFoundException
+    {
+        this( new File( DEFAULT_DIRECTORY, fileName + ".dat" ) );
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        mRandomAccessFile.close();
+        mFileChannel.close();
+    }
+
     @Override
     public int[] get( long index, int length ) throws IOException
     {
         if ( index < 0 || length <= 0 )
             throw new IllegalArgumentException();
-
-        //this.mRandomAccessFile.seek( index * 4 );
-
-        //final ByteBuffer buffer = ByteBuffer.allocate( length * 4 );
-        //mRandomAccessFile.readFully( buffer.array() );
 
         final ByteBuffer buffer = mFileChannel.map( MapMode.READ_ONLY, index * 4, length * 4 );
 
@@ -94,12 +96,5 @@ public class IntegerDataStoreFileImpl implements IntegerDataStore
 
         if ( written != totalBytes )
             throw new IOException( "Failed to write all data" );
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        mRandomAccessFile.close();
-        mFileChannel.close();
     }
 }
