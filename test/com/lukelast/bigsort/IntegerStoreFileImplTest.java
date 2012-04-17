@@ -5,27 +5,19 @@ import static org.junit.Assert.assertArrayEquals;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Unit tests for the {@link IntegerDataStoreFileImpl} class.
+ * Unit tests for the {@link IntegerStoreFileImpl} class.
  * @author Luke Last
  */
-public class IntegerDataStoreFileImplTest
+public class IntegerStoreFileImplTest
 {
     private static final int[] ORDERED = new int[100];
-
     private static final int[] RANDOM = new int[100];
-
     private static final int[] SAME = new int[100];
 
-    /**
-     * @throws java.lang.Exception
-     */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception
     {
@@ -36,31 +28,9 @@ public class IntegerDataStoreFileImplTest
         Random random = new Random();
         for ( int index = 0; index < RANDOM.length; index++ )
         {
-            ORDERED[index] = random.nextInt();
+            RANDOM[index] = random.nextInt();
         }
         Arrays.fill( SAME, 0xABC );
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception
-    {
-    }
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception
-    {
-    }
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception
-    {
     }
 
     /**
@@ -69,7 +39,7 @@ public class IntegerDataStoreFileImplTest
     @Test
     public void testSmall1() throws Exception
     {
-        final IntegerDataStoreFileImpl dataStore = new IntegerDataStoreFileImpl( "testSmall1" );
+        final IntegerStoreFileImpl dataStore = new IntegerStoreFileImpl( "testSmall1" );
 
         for ( int index = 0; index < 100; index++ )
         {
@@ -77,6 +47,7 @@ public class IntegerDataStoreFileImplTest
             final int[] readData = dataStore.get( index, ORDERED.length );
             assertArrayEquals( ORDERED, readData );
         }
+        dataStore.close();
     }
 
     /**
@@ -86,10 +57,11 @@ public class IntegerDataStoreFileImplTest
     @Test
     public void testSmall2() throws Exception
     {
-        final IntegerDataStoreFileImpl dataStore = new IntegerDataStoreFileImpl( "testSmall2" );
+        final IntegerStoreFileImpl dataStore = new IntegerStoreFileImpl( "testSmall2" );
         dataStore.put( ORDERED, 0 );
         dataStore.put( RANDOM, ORDERED.length );
         final int[] readData = dataStore.get( 0, ORDERED.length );
         assertArrayEquals( ORDERED, readData );
+        dataStore.close();
     }
 }

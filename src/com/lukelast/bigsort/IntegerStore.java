@@ -3,7 +3,7 @@ package com.lukelast.bigsort;
 import java.io.Closeable;
 import java.io.IOException;
 
-public interface IntegerDataStore extends Closeable
+public interface IntegerStore extends Closeable
 {
     /**
      * @param index The index of the starting integer to get. Index increments

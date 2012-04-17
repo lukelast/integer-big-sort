@@ -1,16 +1,28 @@
 package com.lukelast.bigsort;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SorterTest
 {
+    private static final File TEST_DIRECTORY = new File( "." );
+
+    private static Sorter newSorter( long chunkSize, long chunks ) throws FileNotFoundException
+    {
+        return new Sorter( new IntegerStoreFileImpl( new File( TEST_DIRECTORY, "start.dat" ) ),
+                           new IntegerStoreFileImpl( new File( TEST_DIRECTORY, "finish.dat" ) ),
+                           chunkSize,
+                           (int) chunks );
+    }
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception
@@ -32,14 +44,24 @@ public class SorterTest
     {
     }
 
+    /**
+     * 727 seconds.
+     * @throws Exception
+     */
     @Test
+    @Ignore
+    public void test100Million() throws Exception
+    {
+        final Sorter sorter = newSorter( 1000 * 1000 * 10, 10 );
+        assertTrue( sorter.doAllStages() );
+    }
+
+    @Test
+    @Ignore
     public void test10Billion() throws Exception
     {
-        final Sorter sorter = new Sorter( new IntegerDataStoreFileImpl( "start" ),
-                                          new IntegerDataStoreFileImpl( "finish" ),
-                                          1000 * 1000 * 10,
-                                          1000 );
-        sorter.fillWithRandomIntegers();
+        final Sorter sorter = newSorter( 1000 * 1000 * 10, 1000 );
+        sorter.doFillWithRandomIntegers();
         sorter.doChunkSort();
         sorter.doMergeSort();
         assertTrue( sorter.doVerifyResult() );
@@ -50,28 +72,14 @@ public class SorterTest
      * @throws Exception
      */
     @Test
+    @Ignore
     public void test1Billion() throws Exception
     {
-        final Sorter sorter = new Sorter( new IntegerDataStoreFileImpl( "start" ),
-                                          new IntegerDataStoreFileImpl( "finish" ),
-                                          1000 * 1000 * 10,
-                                          100 );
-        sorter.fillWithRandomIntegers();
+        final Sorter sorter = newSorter( 1000 * 1000 * 10, 100 );
+        sorter.doFillWithRandomIntegers();
         sorter.doChunkSort();
         sorter.doMergeSort();
         assertTrue( sorter.doVerifyResult() );
-    }
-
-    @Test
-    public void testDoMergeSort()
-    {
-        fail( "Not yet implemented" );
-    }
-
-    @Test
-    public void testDoVerifyResult()
-    {
-        fail( "Not yet implemented" );
     }
 
     @Test
@@ -80,11 +88,11 @@ public class SorterTest
         final int chunkSize = 1000 * 10;
         final int chunks = 100;
         final int size = chunks * chunkSize;
-        final IntegerDataStore start = new IntegerStoreMemoryImpl( size );
-        final IntegerDataStore finish = new IntegerStoreMemoryImpl( size );
+        final IntegerStore start = new IntegerStoreMemoryImpl( size );
+        final IntegerStore finish = new IntegerStoreMemoryImpl( size );
         final Sorter sorter = new Sorter( start, finish, chunkSize, chunks );
 
-        sorter.fillWithRandomIntegers();
+        sorter.doFillWithRandomIntegers();
         sorter.doChunkSort();
         sorter.doMergeSort();
         assertTrue( sorter.doVerifyResult() );
@@ -98,11 +106,11 @@ public class SorterTest
             for ( int chunkSize = 1; chunkSize < 100; chunkSize++ )
             {
                 final int size = chunks * chunkSize;
-                final IntegerDataStore start = new IntegerStoreMemoryImpl( size );
-                final IntegerDataStore finish = new IntegerStoreMemoryImpl( size );
+                final IntegerStore start = new IntegerStoreMemoryImpl( size );
+                final IntegerStore finish = new IntegerStoreMemoryImpl( size );
                 final Sorter sorter = new Sorter( start, finish, chunkSize, chunks );
 
-                sorter.fillWithRandomIntegers();
+                sorter.doFillWithRandomIntegers();
                 sorter.doChunkSort();
                 sorter.doMergeSort();
                 assertTrue( "Chunks: " + chunks + " ChunkSize: " + chunkSize,

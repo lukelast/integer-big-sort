@@ -8,14 +8,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
-public class IntegerDataStoreFileImpl implements IntegerDataStore
+public class IntegerStoreFileImpl implements IntegerStore
 {
     private static final String DEFAULT_DIRECTORY = "C:\\test";
     private final File mFile;
     private final FileChannel mFileChannel;
     private final RandomAccessFile mRandomAccessFile;
 
-    public IntegerDataStoreFileImpl( File file ) throws FileNotFoundException
+    public IntegerStoreFileImpl( File file ) throws FileNotFoundException
     {
         this.mFile = file;
         new File( mFile, ".." ).mkdirs();
@@ -23,7 +23,7 @@ public class IntegerDataStoreFileImpl implements IntegerDataStore
         this.mFileChannel = mRandomAccessFile.getChannel();
     }
 
-    public IntegerDataStoreFileImpl( String fileName ) throws FileNotFoundException
+    public IntegerStoreFileImpl( String fileName ) throws FileNotFoundException
     {
         this( new File( DEFAULT_DIRECTORY, fileName + ".dat" ) );
     }

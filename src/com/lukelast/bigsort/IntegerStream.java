@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Provides integer stream access to the packet based data store.
+ * Provides integer stream access to the packet based data store. A single
+ * stream should only be used for reading or writing but not both at the same
+ * time.
  * @author Luke Last
  */
-public final class ChunkCursor
+public final class IntegerStream
 {
     /**
      * The current index within the current chunk of data {@link #mDataChunk}.
@@ -18,18 +20,24 @@ public final class ChunkCursor
      */
     private final int mChunkSize;
     private int[] mDataChunk;
-    private final IntegerDataStore mDataStore;
+    private final IntegerStore mDataStore;
     /**
      * The index within the data store that the current chunk starts at.
      */
     private long mDataStoreIndex;
-    private final long mIndexFirst;
     private final long mIndexLast;
 
-    ChunkCursor( IntegerDataStore dataStore, long indexFirst, long length, int chunkSize )
+    /**
+     * @param dataStore The backing data store for this stream.
+     * @param indexFirst The index position in the data store to start the
+     *            stream.
+     * @param length The length of the stream.
+     * @param chunkSize The size in integers of the chunks to read and write at
+     *            a time to the data store.
+     */
+    IntegerStream( IntegerStore dataStore, long indexFirst, long length, int chunkSize )
     {
         this.mDataStore = dataStore;
-        this.mIndexFirst = indexFirst;
         this.mIndexLast = ( indexFirst + length ) - 1L;
         this.mDataStoreIndex = indexFirst;
         this.mChunkSize = chunkSize;
@@ -41,6 +49,10 @@ public final class ChunkCursor
         return (int) Math.min( mChunkSize, ( mIndexLast - mDataStoreIndex ) + 1L );
     }
 
+    /**
+     * Write any data pending in the cache to the data store.
+     * @throws IOException
+     */
     public void flush() throws IOException
     {
         if ( mDataChunk != null && 0 < mChunkIndex )
@@ -94,6 +106,11 @@ public final class ChunkCursor
         return mDataChunk[mChunkIndex];
     }
 
+    /**
+     * Write this value and increment the local index to the next position.
+     * @param value 32 bit value to write.
+     * @throws IOException
+     */
     public void write( int value ) throws IOException
     {
         if ( mDataChunk == null || mDataChunk.length <= mChunkIndex )

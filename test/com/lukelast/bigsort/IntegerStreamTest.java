@@ -7,7 +7,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ChunkCursorTest
+public class IntegerStreamTest
 {
     private static final int DATA_SIZE = 1024 * 128;
     private int[] data = new int[DATA_SIZE];
@@ -28,7 +28,7 @@ public class ChunkCursorTest
         for ( int run = 0; run < 1000; run++ )
         {
             final IntegerStoreMemoryImpl store = new IntegerStoreMemoryImpl( DATA_SIZE );
-            final ChunkCursor writer = new ChunkCursor( store,
+            final IntegerStream writer = new IntegerStream( store,
                                                         0,
                                                         DATA_SIZE,
                                                         random.nextInt( DATA_SIZE ) + 1 );
@@ -38,7 +38,7 @@ public class ChunkCursorTest
             }
             writer.flush();
 
-            ChunkCursor reader = new ChunkCursor( store,
+            IntegerStream reader = new IntegerStream( store,
                                                   0,
                                                   DATA_SIZE,
                                                   random.nextInt( DATA_SIZE ) + 1 );
