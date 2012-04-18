@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 public final class ConcurrentIntegerStream extends IntegerStream
 {
     private final ExecutorService mExecutor;
-    private final Collection<Future<?>> mPending = new ConcurrentLinkedDeque<Future<?>>();
+    private final Collection<Future<?>> mPending = new ConcurrentLinkedQueue<Future<?>>();
 
     ConcurrentIntegerStream( ExecutorService executor, IntegerStore dataStore, long indexFirst,
             long length, int chunkSize )
