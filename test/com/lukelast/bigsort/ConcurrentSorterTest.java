@@ -61,6 +61,13 @@ public class ConcurrentSorterTest
     }
 
     @Test
+    @Ignore
+    public void test10Billion() throws Exception
+    {
+        assertTrue( newSorter( 1000 * 1000 * 5, 2000 ).doAllStages() );
+    }
+
+    @Test
     public void test10mInMemory() throws Exception
     {
         final int chunkSize = 1000 * 100;
@@ -74,11 +81,15 @@ public class ConcurrentSorterTest
         assertTrue( sorter.doAllStages() );
     }
 
+    /**
+     * Took 592 seconds on Thinkpad.
+     * @throws Exception
+     */
     @Test
     @Ignore
     public void test1Billion() throws Exception
     {
-        assertTrue( newSorter( 1000 * 1000 * 10, 100 ).doAllStages() );
+        assertTrue( newSorter( 1000 * 1000 * 5, 200 ).doAllStages() );
     }
 
     @Test

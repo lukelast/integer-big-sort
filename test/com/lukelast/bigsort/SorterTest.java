@@ -62,7 +62,7 @@ public class SorterTest
     }
 
     /**
-     * 727 seconds.
+     * Took 727 seconds on Thinkpad.
      * @throws Exception
      */
     @Test
