@@ -65,8 +65,8 @@ public final class ConcurrentSorter extends Sorter
     {
         final List<Future<?>> futures = new ArrayList<Future<?>>();
         final long integersPerRun;
-        // Test if it is divisible by 8.
-        if ( mTotalIntegerCount == ( mTotalIntegerCount & ( ~0b111 ) ) )
+        // Test if it is divisible by 8. 7 is 0b111
+        if ( mTotalIntegerCount == ( mTotalIntegerCount & ( ~7 ) ) )
             integersPerRun = ( mTotalIntegerCount / 8 );
         else
             integersPerRun = mTotalIntegerCount;
