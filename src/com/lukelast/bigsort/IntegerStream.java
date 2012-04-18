@@ -2,6 +2,7 @@ package com.lukelast.bigsort;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Provides integer stream access to the packet based data store. A single
@@ -9,23 +10,23 @@ import java.util.Arrays;
  * time.
  * @author Luke Last
  */
-public final class IntegerStream
+public class IntegerStream
 {
     /**
      * The current index within the current chunk of data {@link #mDataChunk}.
      */
-    private int mChunkIndex;
+    int mChunkIndex;
     /**
      * The size of each {@link #mDataChunk} cached.
      */
-    private final int mChunkSize;
-    private int[] mDataChunk;
-    private final IntegerStore mDataStore;
+    final int mChunkSize;
+    int[] mDataChunk;
+    final IntegerStore mDataStore;
     /**
      * The index within the data store that the current chunk starts at.
      */
-    private long mDataStoreIndex;
-    private final long mIndexLast;
+    long mDataStoreIndex;
+    final long mIndexLast;
 
     /**
      * @param dataStore The backing data store for this stream.
@@ -44,7 +45,7 @@ public final class IntegerStream
         this.mChunkIndex = Integer.MAX_VALUE;
     }
 
-    private int findNextChunkSize()
+    final int findNextChunkSize()
     {
         return (int) Math.min( mChunkSize, ( mIndexLast - mDataStoreIndex ) + 1L );
     }
@@ -52,8 +53,10 @@ public final class IntegerStream
     /**
      * Write any data pending in the cache to the data store.
      * @throws IOException
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
-    public void flush() throws IOException
+    public void flush() throws IOException, InterruptedException, ExecutionException
     {
         if ( mDataChunk != null && 0 < mChunkIndex )
         {
@@ -111,15 +114,20 @@ public final class IntegerStream
      * @param value 32 bit value to write.
      * @throws IOException
      */
-    public void write( int value ) throws IOException
+    public void write( int value ) throws Exception
     {
         if ( mDataChunk == null || mDataChunk.length <= mChunkIndex )
         {
-            this.flush();
-            final int chunkSize = findNextChunkSize();
-            if ( mDataChunk == null || mDataChunk.length != chunkSize )
-                mDataChunk = new int[chunkSize];
+            this.writeBuffer();
         }
         mDataChunk[mChunkIndex++] = value;
+    }
+
+    protected void writeBuffer() throws Exception
+    {
+        this.flush();
+        final int chunkSize = findNextChunkSize();
+        if ( mDataChunk == null || mDataChunk.length != chunkSize )
+            mDataChunk = new int[chunkSize];
     }
 }

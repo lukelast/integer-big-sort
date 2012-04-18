@@ -52,29 +52,47 @@ public class Sorter
         return this.doVerifyResult();
     }
 
-    public void doChunkSort() throws IOException
+    public final void doChunkSort() throws Exception
     {
         print( "Starting Stage-2 doChunkSort" );
-        for ( int chunkCount = 0; chunkCount < mChunkCount; chunkCount++ )
-        {
-            int[] dataChunk = mStartStore.get( chunkCount * mChunkSize, (int) mChunkSize );
-            Arrays.sort( dataChunk );
-            mStartStore.put( dataChunk, chunkCount * mChunkSize );
-        }
+        this.doChunkSortImpl();
         print( "Finished Stage-2 doChunkSort" );
     }
 
-    public void doFillWithRandomIntegers() throws IOException
+    protected void doChunkSortImpl() throws Exception
+    {
+        for ( int chunkCount = 0; chunkCount < mChunkCount; chunkCount++ )
+        {
+            this.sortChunk( chunkCount * mChunkSize );
+        }
+    }
+
+    public void doFillWithRandomIntegers() throws Exception
     {
         System.out.println( mTotalIntegerCount / ( 1000.0 * 1000.0 ) + " million" );
         print( "Starting Stage-1 fillWithRandomIntegers" );
-        fillWithRandomIntegers( 0, mTotalIntegerCount );
+        this.doFillWithRandomIntegersImpl();
         print( "Finished Stage-1 fillWithRandomIntegers" );
     }
 
-    public void doMergeSort() throws IOException
+    protected void doFillWithRandomIntegersImpl() throws Exception
+    {
+        fillWithRandomIntegers( 0, mTotalIntegerCount );
+    }
+
+    public void doMergeSort() throws Exception
     {
         print( "Starting Stage-3 doMergeSort" );
+        this.doMergeSortImpl( new IntegerStream( mFinishStore,
+                                                 0,
+                                                 mTotalIntegerCount,
+                                                 (int) mChunkSize ) );
+        print( "Finished Stage-3 doMergeSort" );
+    }
+
+    protected void doMergeSortImpl( IntegerStream resultStream ) throws Exception
+
+    {
         PriorityQueue<IntegerStream> queue = new PriorityQueue<IntegerStream>( mChunkCount,
                                                                                new IntegerStreamComparator() );
 
@@ -87,11 +105,6 @@ public class Sorter
                                           chunkSize ) );
         }
 
-        final IntegerStream resultStream = new IntegerStream( mFinishStore,
-                                                              0,
-                                                              mTotalIntegerCount,
-                                                              (int) mChunkSize );
-
         while ( !queue.isEmpty() )
         {
             // First key is the lowest value.
@@ -102,7 +115,6 @@ public class Sorter
                 queue.add( smallest );
         }
         resultStream.flush();
-        print( "Finished Stage-3 doMergeSort" );
     }
 
     public boolean doVerifyResult() throws IOException
@@ -124,7 +136,7 @@ public class Sorter
         return true;
     }
 
-    protected final void fillWithRandomIntegers( long start, long size ) throws IOException
+    protected final void fillWithRandomIntegers( long start, long size ) throws Exception
     {
         final Random rand = new Random();
         IntegerStream writer = new IntegerStream( mStartStore, start, size, (int) mChunkSize );
@@ -157,6 +169,13 @@ public class Sorter
         }
         sb.append( message );
         System.out.println( sb.toString() );
+    }
+
+    final void sortChunk( long index ) throws IOException
+    {
+        int[] dataChunk = mStartStore.get( index, (int) mChunkSize );
+        Arrays.sort( dataChunk );
+        mStartStore.put( dataChunk, index );
     }
 
 }

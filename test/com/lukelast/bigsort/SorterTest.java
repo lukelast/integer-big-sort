@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class SorterTest
 {
-    private static final File TEST_DIRECTORY = new File( "." );
+    static final File TEST_DIRECTORY = new File( "." );
 
     private static Sorter newSorter( long chunkSize, long chunks ) throws FileNotFoundException
     {
@@ -45,26 +45,20 @@ public class SorterTest
     }
 
     /**
-     * 727 seconds.
      * @throws Exception
      */
     @Test
     @Ignore
     public void test100Million() throws Exception
     {
-        final Sorter sorter = newSorter( 1000 * 1000 * 10, 10 );
-        assertTrue( sorter.doAllStages() );
+        assertTrue( newSorter( 1000 * 1000 * 10, 10 ).doAllStages() );
     }
 
     @Test
     @Ignore
     public void test10Billion() throws Exception
     {
-        final Sorter sorter = newSorter( 1000 * 1000 * 10, 1000 );
-        sorter.doFillWithRandomIntegers();
-        sorter.doChunkSort();
-        sorter.doMergeSort();
-        assertTrue( sorter.doVerifyResult() );
+        assertTrue( newSorter( 1000 * 1000 * 10, 1000 ).doAllStages() );
     }
 
     /**
@@ -75,11 +69,20 @@ public class SorterTest
     @Ignore
     public void test1Billion() throws Exception
     {
-        final Sorter sorter = newSorter( 1000 * 1000 * 10, 100 );
-        sorter.doFillWithRandomIntegers();
-        sorter.doChunkSort();
-        sorter.doMergeSort();
-        assertTrue( sorter.doVerifyResult() );
+        assertTrue( newSorter( 1000 * 1000 * 10, 100 ).doAllStages() );
+    }
+
+    @Test
+    public void testSort10mInMemory() throws Exception
+    {
+        final int chunkSize = 1000 * 100;
+        final int chunks = 100;
+        final int size = chunks * chunkSize;
+        final IntegerStore start = new IntegerStoreMemoryImpl( size );
+        final IntegerStore finish = new IntegerStoreMemoryImpl( size );
+        final Sorter sorter = new Sorter( start, finish, chunkSize, chunks );
+
+        assertTrue( sorter.doAllStages() );
     }
 
     @Test
@@ -109,12 +112,7 @@ public class SorterTest
                 final IntegerStore start = new IntegerStoreMemoryImpl( size );
                 final IntegerStore finish = new IntegerStoreMemoryImpl( size );
                 final Sorter sorter = new Sorter( start, finish, chunkSize, chunks );
-
-                sorter.doFillWithRandomIntegers();
-                sorter.doChunkSort();
-                sorter.doMergeSort();
-                assertTrue( "Chunks: " + chunks + " ChunkSize: " + chunkSize,
-                            sorter.doVerifyResult() );
+                assertTrue( "Chunks: " + chunks + " ChunkSize: " + chunkSize, sorter.doAllStages() );
             }
         }
     }
